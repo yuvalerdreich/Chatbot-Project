@@ -1,0 +1,44 @@
+name: Deploy Backend to Azure
+
+on:
+  push:
+    branches: [ "main" ] 
+
+permissions:
+  id-token: write 
+  contents: read
+
+jobs:
+  build-and-test-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          npm install
+
+      - name: Run Unit Tests
+        run: |
+          cd backend
+          npm test # The deployment will FAIL here if tests don't pass
+
+      - name: 'Az CLI login'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: 'Deploy to Azure Web App'
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'chatbot-app'
+          package: './backend'
