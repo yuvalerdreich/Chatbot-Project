@@ -1,33 +1,37 @@
-require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
-const chatController = require('./controllers/chatController');
-const app = express();
-const port = process.env.PORT || 3001;
+const chatRoutes = require('./routes/chatRoutes');
+const botService = require('./services/botService');
+const { CloudAdapter, ConfigurationBotFrameworkAuthentication } = require('botbuilder');
 
-/**
- * Standard middleware configuration
- */
-app.use(cors());
+const app = express();
 app.use(express.json());
 
 /**
- * Health check endpoint for Azure App Service monitoring
- * Used to verify the service status without triggering logic
+ * REST API Routes
+ * Standard API endpoints protected by custom x-api-key authentication.
+ */
+app.use('/api/chat', chatRoutes);
+
+/**
+ * Azure Bot Service Integration
+ * Using the official CloudAdapter to process activities from the Bot Framework.
+ */
+const authConfig = new ConfigurationBotFrameworkAuthentication(process.env);
+const adapter = new CloudAdapter(authConfig);
+
+app.post('/api/messages', async (req, res) => {
+    await adapter.process(req, res, (context) => botService.run(context));
+});
+
+/**
+ * Health Check Endpoint
+ * Used by Azure App Service to monitor the deployment status.
  */
 app.get('/health', (req, res) => {
     res.status(200).send('Service is healthy');
 });
 
-/**
- * Main messaging endpoint for the Bot Framework
- * Routes incoming requests to the chat controller
- */
-app.post('/api/messages', chatController.handleMessage);
-
-/**
- * Server initialization
- */
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
