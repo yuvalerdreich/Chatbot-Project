@@ -28,11 +28,12 @@ jobs:
       - name: Run Unit Tests
         run: |
           cd backend
-          npm test # The deployment will FAIL here if tests don't pass
+          npm test
 
       - name: 'Az CLI login'
         uses: azure/login@v2
         with:
+          auth-type: FEDERATED
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
