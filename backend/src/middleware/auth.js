@@ -1,31 +1,27 @@
-const vaultService = require('../services/vaultService');
+function decodeEasyAuthPrincipal(headerValue) {
+    try {
+        const json = Buffer.from(String(headerValue), 'base64').toString('utf8');
+        return JSON.parse(json);
+    } catch (_) {
+        return null;
+    }
+}
 
-let cachedKey = null;
-
-/**
- * Authorize incoming HTTP requests
- * Validates the API key against the secret stored in Azure Key Vault
- */
-const authorize = async (req, res, next) => {
-    const providedKey = req.headers['x-api-key'];
-
-    if (!providedKey) {
-        return res.status(401).json({ error: 'Access denied: No API key provided' });
+const authorize = (req, res, next) => {
+    if ((process.env.NODE_ENV || '').toLowerCase() === 'development') {
+        return next();
     }
 
-    /**
-     * Lazy loading and caching the secret to minimize Key Vault latency
-     * Ensure high performance for sequential requests
-     */
-    if (!cachedKey) {
-        cachedKey = await vaultService.getSecret('BOT-API-AUTH-KEY');
+    const principalHeader = req.headers['x-ms-client-principal'];
+    if (principalHeader) {
+        const principal = decodeEasyAuthPrincipal(principalHeader);
+        req.user = principal || { raw: principalHeader };
+        return next();
     }
 
-    if (providedKey !== cachedKey) {
-        return res.status(403).json({ error: 'Access denied: Invalid API key' });
-    }
-
-    next();
+    return res.status(401).json({
+        error: 'Unauthorized: Entra ID authentication is required (enable App Service Authentication / Easy Auth).'
+    });
 };
 
 module.exports = authorize;

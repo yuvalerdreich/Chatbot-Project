@@ -1,22 +1,23 @@
-const aiService = require('../src/services/aiService');
+process.env.AZURE_OPENAI_ENDPOINT = 'https://dummy.openai.azure.com/';
+process.env.AZURE_OPENAI_DEPLOYMENT_NAME = 'dummy-deployment';
 
-// Mocking the Azure OpenAI client
+jest.mock('@azure/identity', () => ({
+    DefaultAzureCredential: jest.fn().mockImplementation(() => ({}))
+}));
+
 jest.mock('@azure/openai', () => ({
     OpenAIClient: jest.fn().mockImplementation(() => ({
         getChatCompletions: jest.fn().mockResolvedValue({
             choices: [{ message: { content: 'Test AI Response' } }]
         })
-    })),
-    AzureKeyCredential: jest.fn()
+    }))
 }));
 
+const aiService = require('../src/services/aiService');
+
 describe('AI Service', () => {
-    test('Should return a string response from OpenAI', async () => {
+    test('Should return a string response from Azure OpenAI', async () => {
         const response = await aiService.getChatCompletion([{ role: 'user', content: 'hi' }]);
         expect(response).toBe('Test AI Response');
-    });
-
-    test('Should handle empty choices from AI', async () => {
-        // Implementation logic for edge cases
     });
 });
