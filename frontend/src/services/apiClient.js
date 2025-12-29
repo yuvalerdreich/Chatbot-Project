@@ -4,7 +4,7 @@ import { API_CONFIG } from './authConfig';
  * Service to handle HTTP requests to the Chatbot Backend.
  */
 export const sendMessageToBot = async (userId, message) => {
-    const response = await fetch(`${API_CONFIG.BASE_URL}/chat/messages`, {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/chat/messages`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
