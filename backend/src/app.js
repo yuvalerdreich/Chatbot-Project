@@ -1,10 +1,20 @@
 const express = require('express');
+const path = require('path');
 const chatRoutes = require('./routes/chatRoutes');
 const botService = require('./services/botService');
 const { CloudAdapter, ConfigurationBotFrameworkAuthentication } = require('botbuilder');
 
 const app = express();
+
+/**
+ * Middleware for parsing JSON bodies.
+ */
 app.use(express.json());
+
+/**
+ * Serve static files from the React frontend build folder
+ */
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 /**
  * REST API Routes
@@ -14,7 +24,6 @@ app.use('/api/chat', chatRoutes);
 
 /**
  * Azure Bot Service Integration
- * Using the official CloudAdapter to process activities from the Bot Framework.
  */
 const authConfig = new ConfigurationBotFrameworkAuthentication(process.env);
 const adapter = new CloudAdapter(authConfig);
@@ -25,10 +34,16 @@ app.post('/api/messages', async (req, res) => {
 
 /**
  * Health Check Endpoint
- * Used by Azure App Service to monitor the deployment status.
  */
 app.get('/health', (req, res) => {
     res.status(200).send('Service is healthy');
+});
+
+/**
+ * Catch-all route to serve the React frontend index.html
+ */
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
