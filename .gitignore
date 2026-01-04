@@ -4,6 +4,10 @@ node_modules/
 # env
 .env
 
+# build outputs
+frontend/build/
+backend/public/
+
 # logs
 *.log
 
