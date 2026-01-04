@@ -7,9 +7,11 @@ class RedisService {
     constructor() {
         const host = process.env.REDIS_HOST;
         const port = process.env.REDIS_PORT || 6380;
+        const password = process.env.REDIS_PASSWORD;
 
         this.client = createClient({
             url: `rediss://${host}:${port}`,
+            password: password,
             socket: {
                 tls: true,
                 reconnectStrategy: (retries) => Math.min(retries * 50, 500)
