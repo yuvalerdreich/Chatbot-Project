@@ -10,8 +10,7 @@ class RedisService {
         const password = process.env.REDIS_PASSWORD;
 
         this.client = createClient({
-            url: `rediss://${host}:${port}`,
-            password: password,
+            url: `rediss://:${password}@${host}:${port}`,
             socket: {
                 tls: true,
                 reconnectStrategy: (retries) => Math.min(retries * 50, 500)
