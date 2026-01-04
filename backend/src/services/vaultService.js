@@ -3,7 +3,7 @@ const { DefaultAzureCredential } = require('@azure/identity');
 
 class VaultService {
     constructor() {
-        const vaultName = process.env.AZURE_KEYVAULT_NAME || process.env.KEY_VAULT_NAME;
+        const vaultName = process.env.AZURE_KEYVAULT_NAME;
         const url = `https://${vaultName}.vault.azure.net`;
         this.client = new SecretClient(url, new DefaultAzureCredential());
     }
