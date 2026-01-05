@@ -20,7 +20,7 @@ class AIService {
     async getChatCompletion(messages) {
         try {
             const result = await this.client.getChatCompletions(this.deploymentName, messages, {
-                maxTokens: 800,
+                maxCompletionTokens: 800,
                 temperature: 0.7,
             });
             return result.choices[0].message.content;
