@@ -2,7 +2,7 @@ process.env.AZURE_OPENAI_ENDPOINT = 'https://dummy.openai.azure.com/';
 process.env.AZURE_OPENAI_DEPLOYMENT_NAME = 'dummy-deployment';
 
 jest.mock('@azure/identity', () => ({
-    DefaultAzureCredential: jest.fn().mockImplementation(() => ({}))
+    ManagedIdentityCredential: jest.fn().mockImplementation(() => ({}))
 }));
 
 jest.mock('@azure/openai', () => ({
