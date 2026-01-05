@@ -1,5 +1,5 @@
 const { OpenAIClient } = require("@azure/openai");
-const { DefaultAzureCredential } = require("@azure/identity");
+const { ManagedIdentityCredential } = require("@azure/identity");
 
 /**
  * AI Service Handles communication with Azure OpenAI Service.
@@ -8,7 +8,7 @@ const { DefaultAzureCredential } = require("@azure/identity");
 class AIService {
     constructor() {
         const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
-        const credential = new DefaultAzureCredential();
+        const credential = new ManagedIdentityCredential();
         this.client = new OpenAIClient(endpoint, credential);
         this.deploymentName = process.env.AZURE_OPENAI_DEPLOYMENT_NAME;
     }
