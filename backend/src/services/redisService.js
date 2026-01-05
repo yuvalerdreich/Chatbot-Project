@@ -8,15 +8,17 @@ class RedisService {
         const host = process.env.REDIS_HOST;
         const port = process.env.REDIS_PORT || 6380;
         const password = process.env.REDIS_PASSWORD;
+        const username = process.env.REDIS_USERNAME || 'default';
 
         this.client = createClient({
+            username: username,
+            password: password,
             socket: {
                 host: host,
                 port: port,
                 tls: true,
                 reconnectStrategy: (retries) => Math.min(retries * 50, 500)
-            },
-            password: password
+            }
         });
 
         this.client.on('error', (err) => console.error('Redis Client Error:', err));
