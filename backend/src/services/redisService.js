@@ -8,10 +8,8 @@ class RedisService {
         const host = process.env.REDIS_HOST;
         const port = process.env.REDIS_PORT || 6380;
         const password = process.env.REDIS_PASSWORD;
-        const username = process.env.REDIS_USERNAME || 'default';
 
         this.client = createClient({
-            username: username,
             password: password,
             socket: {
                 host: host,
