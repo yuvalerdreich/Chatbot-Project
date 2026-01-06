@@ -2,8 +2,6 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const chatRoutes = require('./routes/chatRoutes');
-const botService = require('./services/botService');
-const { CloudAdapter, ConfigurationBotFrameworkAuthentication } = require('botbuilder');
 
 const app = express();
 
@@ -21,13 +19,6 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use('/api/chat', chatRoutes);
-
-const authConfig = new ConfigurationBotFrameworkAuthentication(process.env);
-const adapter = new CloudAdapter(authConfig);
-
-app.post('/api/messages', async (req, res) => {
-    await adapter.process(req, res, (context) => botService.run(context));
-});
 
 app.get('/health', (req, res) => {
     res.status(200).send('Service is healthy');
