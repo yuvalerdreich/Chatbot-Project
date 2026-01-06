@@ -11,12 +11,23 @@ class CosmosService {
         this.containerId = process.env.COSMOS_DB_CONTAINER_ID;
 
         /**
-         * Authentication via Managed Identity
+         * Authentication via Managed Identity or Key
          */
-        this.client = new CosmosClient({
-            endpoint: this.endpoint,
-            credential: new DefaultAzureCredential()
-        });
+        const cosmosKey = process.env.COSMOS_DB_KEY;
+        
+        if (cosmosKey) {
+            // Use key authentication
+            this.client = new CosmosClient({
+                endpoint: this.endpoint,
+                key: cosmosKey
+            });
+        } else {
+            // Use Managed Identity authentication
+            this.client = new CosmosClient({
+                endpoint: this.endpoint,
+                aadCredentials: new DefaultAzureCredential()
+            });
+        }
     }
 
     /**
