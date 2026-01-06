@@ -21,12 +21,12 @@ class AIService {
         try {
             const result = await this.client.getChatCompletions(this.deploymentName, messages, {
                 maxCompletionTokens: 800,
-                temperature: 0.7,
+                
             });
             return result.choices[0].message.content;
         } catch (error) {
-            console.error("AI Service Error:", error);
-            throw error;
+            console.error("AI Service Error:", error.error || error);
+            throw new Error(`AI completion failed: ${error.message || 'Unknown error'}`);
         }
     }
 }
